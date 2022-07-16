@@ -98,10 +98,12 @@ export default {
             });
           }
         }
-      } catch (message) {
+        // message : netlify 서버리스 함수에 있는 데이터이기 때문에 변경해야함
+        // error -> { message }로 변경해도 됨
+      } catch (error) {
         commit("updateState", {
           movies: [],
-          message,
+          message: error.message,
         });
       } finally {
         commit("updateState", {
@@ -136,25 +138,9 @@ export default {
   },
 };
 
-function _fetchMovie(payload) {
-  const { title, type, year, page, id } = payload; // -> URL 검색
-  const OMDB_API_KEY = "7035c60c";
-  const url = id
-    ? `https://www.omdbapi.com/?apikey=${OMDB_API_KEY}&i=${id}`
-    : `https://www.omdbapi.com/?apikey=${OMDB_API_KEY}&s=${title}&type=${type}&y=${year}&page=${page}`;
-  return new Promise((resolve, reject) => {
-    axios
-      .get(url)
-      .then((res) => {
-        // 예외 처리
-        console.log("_fetchMovie res : ", res); // status는 200이어도 데이터를 가지고 오지 못하는 에러 발생 가능
-        if (res.data.Error) {
-          reject(res.data.Error);
-        }
-        resolve(res);
-      })
-      .catch((err) => {
-        reject(err.message);
-      });
-  });
+// payload에는 title, page 등 속성을 가지고 있는 객체 데이터
+async function _fetchMovie(payload) {
+  // get(url) : 필요로 하는 정보를 주소(querystring)로 전달
+  // post() : 데이터를 요청할때 body에 담아서 전달
+  return await axios.post("/.netlify/functions/movie", payload)
 }
