@@ -1,13 +1,14 @@
 // node.js 환경
 const axios = require("axios");
+// const { OMDB_API_KEY } = process.env.OMDB_API_KEY
+const { OMDB_API_KEY } = process.env
 
 exports.handler = async function (event) {
   // movie.js _fetchmovie 함수를 서버리스 함수 내에서 실행되도록
   console.log(event)
   const payload = JSON.parse(event.body)
-
+  // const OMDB_API_KEY = "7035c60c"; // .env 파일로 이전
   const { title, type, year, page, id } = payload; // -> URL 검색
-  const OMDB_API_KEY = "7035c60c";
   const url = id
     ? `https://www.omdbapi.com/?apikey=${OMDB_API_KEY}&i=${id}`
     : `https://www.omdbapi.com/?apikey=${OMDB_API_KEY}&s=${title}&type=${type}&y=${year}&page=${page}`;
