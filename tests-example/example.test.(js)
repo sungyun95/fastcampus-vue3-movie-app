@@ -1,0 +1,141 @@
+// const { double } = require("./example");
+// // describe : 테스트 묶음, 그룹, before, after 실행하기 위함
+// describe('그룹 1', () => {
+//   // beforeAll : 모든 테스트가 시작하기 전에 단 한번 시행
+//   beforeAll(() => {
+//     console.log('beforeAll!')
+//   })
+//   // afterAll : 모든 테스트가 끝난 후
+//   afterAll(() => {
+//     console.log('afterAll!')
+//   })
+//   // beforeEach : 각각의 테스트가 동작하기 전
+//   beforeEach(() => {
+//     console.log('beforeEach!')
+//   })
+//   // afterEach : 각각의 테스트가 동작한 후
+//   afterEach(() => {
+//     console.log('afterEach!')
+//   })
+//   test('첫 테스트', () => {
+//     console.log('첫 테스트!')
+//     expect(123).toBe(123)
+//   })
+
+//   test('인수가 숫자 데이터 입니다', () => {
+//     console.log('인수가 숫자 데이터 입니다!')
+//     expect(double(3)).toBe(6)
+//     expect(double(10)).toBe(20)
+//   })
+
+//   test('인수가 없습니다', () => {
+//     console.log('인수가 없습니다!')
+//     expect(double()).toBe(0) // NaN -> test 참고하여 원래 함수 수정!
+//   })
+// })
+
+// const userA = {
+//   name: "Heropy",
+//   age: 85,
+// };
+
+// const userB = {
+//   name: "Neo",
+//   age: 22,
+// };
+
+// test("데이터가 일치해야 합니다", () => {
+//   expect(userA.age).toBe(85);
+//   // toBe : 원시데이터
+//   // toEqual
+//   expect(userA).toEqual({
+//     name: "Heropy",
+//     age: 85,
+//   });
+//   // toBe FAIL : If it should pass with deep equality, replace "toBe" with "toStrictEqual"(toEqual도 가능)
+// });
+
+// test("데이터가 일치해야 합니다", () => {
+//   expect(userB.name).not.toBe("Heorpy");
+//   // .not 일때는 toBe toEqual 상관 없음
+//   expect(userB).not.toBe(userA);
+//   expect(userB).not.toEqual(userA);
+// });
+
+// 비동기 테스트 4가지 패턴
+
+// import { asyncFn } from "./example";
+// import * as example from "./example";
+
+// describe("비동기 테스트", () => {
+// test("done", (done) => {
+//   asyncFn().then((res) => {
+//     expect(res).toBe("Done!");
+//     done();
+//   });
+// });
+
+// test("then", () => {
+//   return asyncFn().then((res) => {
+//     expect(res).toBe("Done?");
+//   });
+// });
+
+// // {return } 생략 가능
+// test("resolves", () => {
+//   return expect(asyncFn()).resolves.toBe("Done>");
+// });
+
+// 추천(주로 사용), 직관적
+//   test("async/await", async () => {
+//     const res = await asyncFn();
+//     expect(res).toBe("Done!");
+//   }, 7000);
+// });
+
+// 모의 함수 : 비동기 시간 무시
+// describe("모의(Mock) 함수", () => {
+//   test("async/await", async () => {
+//     // asyncFn을 모의함수로 만듬, "Done?"을 반환
+//     jest.spyOn(example, "asyncFn").mockResolvedValue("Done?");
+//     const res = await example.asyncFn();
+//     expect(res).toBe("Done!");
+//   }, 7000);
+// });
+
+// import axios from "axios";
+// import { fetchMovieTitle } from "./example";
+
+// describe("모의 함수 - 영화", () => {
+//   test("영화 제목 변환", async () => {
+//     axios.get = jest.fn(() => {
+//       return new Promise((resolve) => {
+//         resolve({
+//           data: {
+//             Title: "Frozen II",
+//           },
+//         });
+//       });
+//     }); // 가짜 결과를 반환해 줄 수 있음
+//     const title = await fetchMovieTitle();
+//     expect(title).toBe("Frozen ii");
+//   });
+// });
+
+import { mount } from "@vue/test-utils";
+import Example from "./Example.vue";
+
+test("메세지를 변경합니다", async () => {
+  // mount(컴포넌트, 옵션(생략가능)) : vue 컴포넌트 연결, wrapper 객체 반환
+  const wrapper = mount(Example);
+  // wrapper.vm === this
+  expect(wrapper.vm.msg).toBe("Hello Vue test utils!");
+  // 변경한 데이터를 그대로 테스트에 활용해서 확인하는 건 테스트하는 가치가 없다고 판단
+  // div 안의 내용도 동일하게 변경되어야 함
+  // wrapper.vm.msg = "Hello Heropy!"; // div를 바꾸지는 못함
+  await wrapper.setData({
+    msg: "Hello Heropy!",
+  });
+  expect(wrapper.vm.msg).toBe("Hello Heropy!");
+  expect(wrapper.find("div").text()).toBe("Hello Heropy!");
+});

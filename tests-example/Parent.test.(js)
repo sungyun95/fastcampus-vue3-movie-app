@@ -1,0 +1,13 @@
+import { shallowMount } from "@vue/test-utils";
+import Parent from "./Parent";
+
+test("Mount", () => {
+  // const wrapper = mount(Parent);
+  // expect(wrapper.html()).toBe("");
+  // <h1>Parent</h1><div>~</div>
+
+  const wrapper = shallowMount(Parent);
+  expect(wrapper.html()).toBe("");
+  // "<h1>Parent</h1><child-stub msg=\"Heropy\"></child-stub>"
+  // stub : 모의, 가짜!, 화면에 렌더링 하지는 않음
+});
